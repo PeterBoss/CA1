@@ -30,6 +30,8 @@ public class ChatServer {
             do {
                 Socket socket = serverSocket.accept();
                 System.out.println("Connected to a client");
+                ClientHandler clientHandler = new ClientHandler(socket, this);
+                clientHandler.run();
                 // do stuff
             } while (keepRunning);
         } catch (IOException ex) {
