@@ -1,0 +1,6 @@
+#surefire
+#Tue Sep 06 14:19:49 CEST 2016
+maven.ext.class.path=/Applications/NetBeans/NetBeans 8.1.app/Contents/Resources/NetBeans/java/maven-nblib/netbeans-eventspy.jar
+user.dir=/Users/josephawwal/NetBeansProjects/CA1-master
+localRepository=/Users/josephawwal/.m2/repository
+basedir=/Users/josephawwal/NetBeansProjects/CA1-master
