@@ -1,4 +1,4 @@
-package cagrp.ca1;
+package ca1;
 
 import java.io.IOException;
 import java.io.PrintWriter;
