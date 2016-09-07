@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-import ca1.ChatServer;
+import server.ChatServer;
 import java.io.IOException;
 import org.junit.After;
 import org.junit.AfterClass;
