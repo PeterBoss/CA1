@@ -4,22 +4,30 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Observable;
+import java.util.Observer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ChatServer extends Observable{
+public class ChatServer extends Observable {
 
     private static ServerSocket serverSocket;
     private static String ip;
     private static int port;
     private static boolean keepRunning = true;
+    private static List<String> clients = new CopyOnWriteArrayList();
+
+    private ConcurrentMap<String, Observer> clientMap = new ConcurrentHashMap<>();
 
     public static void stopServer() {
         keepRunning = false;
     }
 
-    public void runServer(String ip, int port) {
+    private void runServer(String ip, int port) {
         this.port = port;
         this.ip = ip;
 
@@ -32,7 +40,7 @@ public class ChatServer extends Observable{
                 Socket socket = serverSocket.accept();
                 System.out.println("Connected to a client");
                 ClientHandler clientHandler = new ClientHandler(socket, this);
-                addObserver(clientHandler);
+//                addObserver(clientHandler);
                 clientHandler.start();
 
             } while (keepRunning);
@@ -42,10 +50,59 @@ public class ChatServer extends Observable{
         }
 
     }
-    
-    public void sendMessage(String s) {
+
+    public void addClientToMap(String username, Observer obs) {
+        clientMap.put(username, obs);
+    }
+
+    public void removeClientFromMap(String username) {
+        clientMap.remove(username);
+    }
+
+    public void addClient(String username) {
+        clients.add(username);
+
+    }
+
+    public void removeClient(String username) {
+        clients.remove(username);
+    }
+
+    public void broadcastClients() {
+        StringBuilder str = new StringBuilder("CLIENTLIST:");
+
+        for (String username : clients) {
+            str.append(username + ",");
+        }
+
         setChanged();
-        notifyObservers(s);
+        notifyObservers(str);
+    }
+
+    public void sendMessage(String[] bits, String username) {
+        StringBuilder str = new StringBuilder("MSGRES:");
+        str.append(username + ":");
+        str.append(bits[2]);
+        setChanged();
+
+        String[] recipients = bits[1].split(",");
+
+        if (recipients.length > 1) {
+
+            for (String s : recipients) {
+                clientMap.get(s).update(this, str);
+            }
+        } else {
+            clientMap.get(bits[1]).update(this, str);
+        }
+    }
+
+    void sendMessageToAll(String[] bits, String username) {
+        StringBuilder str = new StringBuilder("MSGRES:");
+        str.append(username + ":");
+        str.append(bits[2]);
+        setChanged();
+        notifyObservers(str);
     }
 
     public static void main(String[] args) {
@@ -53,4 +110,5 @@ public class ChatServer extends Observable{
         new ChatServer().runServer(args[0], Integer.valueOf(args[1]));
 
     }
+
 }

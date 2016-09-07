@@ -15,6 +15,7 @@ public class ClientHandler extends Thread implements Observer {
     private final PrintWriter writer;
     private final ChatServer server;
     private final Scanner input;
+    private String username;
 
     public ClientHandler(Socket socket, ChatServer server) throws IOException {
         this.socket = socket;
@@ -29,25 +30,45 @@ public class ClientHandler extends Thread implements Observer {
             while (true) {
                 String message = input.nextLine();
                 System.out.println("Received: " + message);
-                if (message == null) {
-                    continue;
-                    // temp (see echo example)
-                } else if (message.equals("LOGOUT:")) {
+                if (message.equals("LOGOUT:")) {
                     break;
                 }
-                server.sendMessage(message);
+                String[] bits = message.split(":");
+                switch (bits[0]) {
+                    case "LOGIN": {
+                        if (bits.length == 2) {
+                            server.addObserver(this);
+                            username = bits[1];
+                            server.addClientToMap(username, this);
+                            server.addClient(username);
+                            server.broadcastClients();
+                            continue;
+                        }
+                    }
+                    case "MSG":
+                        if (bits[1].equals("")) {
+                            server.sendMessageToAll(bits, username);
+                        }
+                        else {
+                            server.sendMessage(bits, username);
+                        }
+                }
+
+
             }
         } finally {
             try {
-                writer.println("LOGGING OUT");//Echo the stop message back to the client for a nice closedown
+                writer.println("LOGGING OUT");
                 socket.close();
                 server.deleteObserver(this);
+                server.removeClientFromMap(username);
+                server.removeClient(username);
                 System.out.println("Closed a Connection");
             } catch (IOException ex) {
                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    } 
+    }
 
     @Override
     public void update(Observable o, Object arg) {
