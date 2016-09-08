@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-import cagrp.ca1.ChatServer;
+import client.Client;
 import java.io.IOException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import org.junit.Test;
+import server.ChatServer;
 
 /**
  *
@@ -64,7 +65,7 @@ public class ClientTest {
      {
      
          ChatServer CS = new ChatServer();
-         CS.runServer("localhost", 9000);
+       //  CS.runServer("localhost", 9000);
          
      }
      
@@ -73,5 +74,19 @@ public class ClientTest {
          ChatServer CS = new ChatServer();
          CS.stopServer();
          
+     }
+     
+     public void testConnection() throws IOException{
+         
+         Client client = new Client();
+       
+            client.connect("localhost", 9000, "joseph");
+      
+     }
+     
+     public void testMessageArrived(){
+         
+         Client client = new Client();
+         client.messageArrived("test");
      }
 }
