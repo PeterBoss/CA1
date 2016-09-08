@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -90,3 +91,82 @@ public class ClientTest {
          client.messageArrived("test");
      }
 }
+=======
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+import server.ChatServer;
+import java.io.IOException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
+import org.junit.Test;
+
+/**
+ *
+ * @author josephawwal
+ */
+public class ClientTest {
+    
+    public ClientTest() {
+    }
+    
+    @BeforeClass
+    public static void setUpClass() throws IOException, InterruptedException {
+    
+        new Thread(new Runnable(){
+            
+            @Override
+            
+            public void run(){
+                
+                ChatServer.main(null);
+                
+            }
+        }).start();
+        
+    }
+    
+    @AfterClass
+    public static void tearDownClass() throws IOException {
+        
+        ChatServer.stopServer();
+    }
+    
+    @Before
+    public void setUp() {
+    }
+    
+    @After
+    public void tearDown() {
+    }
+    
+   
+
+    // TODO add test methods here.
+    // The methods must be annotated with annotation @Test. For example:
+    //
+  @Test
+     
+  
+     public void testServerStart() throws IOException, InterruptedException 
+     {
+     
+         ChatServer CS = new ChatServer();
+         CS.runServer("localhost", 9000);
+         
+     }
+     
+     public void testServerStop() throws IOException, InterruptedException {
+         
+         ChatServer CS = new ChatServer();
+         CS.stopServer();
+         
+     }
+}
+>>>>>>> 2ceed68b40c036c33880f7d799ca22f4b1188289
